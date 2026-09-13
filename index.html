@@ -110,11 +110,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
-    color: var(--sub);
     margin-bottom: 10px;
   }
+  .quiz-header .quiz-status {
+    font-size: 0.9rem;
+    color: var(--sub);
+    text-align: right;
+  }
   .quiz-header .mode-label {
+    display: block;
     font-weight: bold;
     color: var(--accent);
   }
@@ -137,56 +141,42 @@
     fill: #1a1a1a;
   }
 
-  form.answer-form {
-    display: flex;
-    gap: 8px;
+  .btn-reveal {
     margin-bottom: 6px;
-  }
-  input[type="text"] {
-    flex: 1;
-    font-size: 1.1rem;
-    padding: 12px 14px;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    min-width: 0;
-  }
-  input[type="text"]:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-  .answer-form .btn {
-    width: auto;
-    margin: 0;
-    white-space: nowrap;
   }
 
   .feedback {
     text-align: center;
+    background: #eef3ee;
     border-radius: 12px;
-    padding: 18px 14px;
-    margin-bottom: 14px;
-  }
-  .feedback.correct {
-    background: #eaf6ee;
-    color: var(--accent-dark);
-  }
-  .feedback.wrong {
-    background: #fbeceb;
-    color: var(--danger);
-  }
-  .feedback .result-word {
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-bottom: 4px;
+    padding: 20px 14px;
+    margin-bottom: 12px;
   }
   .feedback .answer-name {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
+    color: var(--accent-dark);
   }
-  .feedback .your-answer {
-    font-size: 0.85rem;
+
+  .self-check {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .self-check .btn {
+    margin: 0;
+  }
+  .btn-knew {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-didnt-know {
+    background: #ffffff;
     color: var(--sub);
-    margin-top: 6px;
+    border: 2px solid var(--border);
+  }
+  .btn-didnt-know:hover {
+    background: #f2f2f2;
   }
 
   .result-summary {
@@ -244,15 +234,23 @@
   }
   .learn-header .learn-count strong { color: var(--accent); }
   .btn-back {
-    background: none;
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #ffffff;
+    border: 2px solid var(--accent);
     color: var(--accent);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: bold;
     cursor: pointer;
-    padding: 4px 0;
+    padding: 8px 12px;
+    border-radius: 8px;
   }
+  .btn-back:hover { background: #eef6f0; }
+  .btn-back:active { transform: scale(0.98); }
+
   .learn-map-wrap {
+    position: relative;
     background: #fafafa;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -264,35 +262,25 @@
     width: 100%;
     height: auto;
     max-height: 62vh;
+    touch-action: none;
+    user-select: none;
   }
   .map-pref {
     fill: #d9e4dd;
-    stroke: #888;
-    stroke-width: 0.8;
+    stroke: #5a5a5a;
+    stroke-width: 1.3;
     cursor: pointer;
     transition: fill 0.15s ease;
   }
   .map-pref:hover {
     fill: #bcd3c5;
   }
-  .map-pref.tapped {
+  .map-pref.learned {
     fill: var(--accent);
   }
-  .map-label {
-    font-size: 15px;
-    font-weight: bold;
-    fill: #1a1a1a;
-    paint-order: stroke;
-    stroke: #ffffff;
-    stroke-width: 3px;
-    stroke-linejoin: round;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    pointer-events: none;
-    opacity: 0;
-  }
-  .map-label.visible {
-    opacity: 1;
+  .map-pref.active {
+    stroke: #d98a2b;
+    stroke-width: 3.5;
   }
   .learn-hint {
     text-align: center;
@@ -310,6 +298,52 @@
     padding: 10px;
     margin-bottom: 14px;
   }
+  .learn-legend {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    font-size: 0.8rem;
+    color: var(--sub);
+    margin-bottom: 14px;
+  }
+  .learn-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    display: inline-block;
+    border: 1px solid #5a5a5a;
+  }
+  .legend-swatch.learned { background: var(--accent); border-color: var(--accent); }
+  .legend-swatch.unlearned { background: #d9e4dd; }
+
+  .zoom-controls {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .zoom-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--accent-dark);
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .zoom-btn:active { transform: scale(0.95); }
+  .zoom-btn.zoom-reset { font-size: 0.9rem; }
 </style>
 </head>
 <body>
@@ -338,26 +372,27 @@
   <!-- ===== 出題画面 ===== -->
   <section id="screen-quiz" class="card hidden">
     <div class="quiz-header">
-      <span class="mode-label" id="quiz-mode-label">通常モード</span>
-      <span id="quiz-progress">1 / 47</span>
+      <button class="btn-back" id="btn-quiz-back" type="button">← トップに戻る</button>
+      <span class="quiz-status">
+        <span class="mode-label" id="quiz-mode-label">通常モード</span>
+        <span id="quiz-progress">1 / 47</span>
+      </span>
     </div>
 
     <div class="silhouette-wrap">
       <svg id="quiz-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
 
-    <form class="answer-form" id="answer-form" autocomplete="off">
-      <input type="text" id="answer-input" placeholder="都道府県名を漢字で入力" autocomplete="off">
-      <button class="btn" id="btn-submit" type="submit">回答する</button>
-    </form>
+    <button class="btn btn-reveal" id="btn-reveal" type="button">答えを見る</button>
 
     <div class="feedback hidden" id="feedback-box">
-      <div class="result-word" id="feedback-word"></div>
       <div class="answer-name" id="feedback-answer"></div>
-      <div class="your-answer hidden" id="feedback-your-answer"></div>
     </div>
 
-    <button class="btn hidden" id="btn-next" type="button">次へ</button>
+    <div class="self-check hidden" id="self-check-buttons">
+      <button class="btn btn-knew" id="btn-knew" type="button">覚えていた</button>
+      <button class="btn btn-didnt-know" id="btn-didnt-know" type="button">まだ覚えていない</button>
+    </div>
   </section>
 
   <!-- ===== 結果画面 ===== -->
@@ -369,7 +404,7 @@
     </div>
 
     <div class="wrong-list" id="wrong-list-box">
-      <h2>間違えた都道府県</h2>
+      <h2>まだ覚えていない都道府県</h2>
       <ul id="wrong-list"></ul>
     </div>
 
@@ -381,16 +416,23 @@
   <section id="screen-learn" class="card hidden">
     <div class="learn-header">
       <button class="btn-back" id="btn-learn-back" type="button">← トップに戻る</button>
-      <span class="learn-count">タップ済み: <strong id="learn-count">0</strong> / 47</span>
+      <span class="learn-count">覚えた: <strong id="learn-count">0</strong> / 47</span>
     </div>
-    <p class="learn-hint">地図をタップすると、その都道府県名が表示されます</p>
+    <p class="learn-hint">地図をタップすると、都道府県名が上に表示されます</p>
     <div class="learn-selected" id="learn-selected">都道府県をタップしてね</div>
-
-    <div class="learn-map-wrap">
-      <svg id="learn-svg" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="learn-legend">
+      <span><span class="legend-swatch learned"></span>覚えた（クイズ正解済み）</span>
+      <span><span class="legend-swatch unlearned"></span>まだ</span>
     </div>
 
-    <button class="btn secondary" id="btn-learn-reset" type="button">タップ状態をリセット</button>
+    <div class="learn-map-wrap" id="learn-map-wrap">
+      <svg id="learn-svg" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="zoom-controls">
+        <button class="zoom-btn" id="btn-zoom-in" type="button" aria-label="拡大">＋</button>
+        <button class="zoom-btn" id="btn-zoom-out" type="button" aria-label="縮小">－</button>
+        <button class="zoom-btn zoom-reset" id="btn-zoom-reset" type="button" aria-label="全体表示に戻す">⤾</button>
+      </div>
+    </div>
   </section>
 
 </div>
@@ -471,32 +513,6 @@
   }
 
   // ---------------------------------------------------------------------
-  // 正誤判定
-  // ---------------------------------------------------------------------
-  function normalize(str) {
-    return (str || '')
-      .normalize('NFKC')
-      .replace(/[\s　]/g, '');
-  }
-  function acceptableAnswers(name) {
-    var set = [name];
-    var last = name.slice(-1);
-    if (last === '都' || last === '府' || last === '県') {
-      set.push(name.slice(0, -1));
-    } else if (last === '道' && name !== '北海道') {
-      set.push(name.slice(0, -1));
-    }
-    return set;
-  }
-  function isCorrectAnswer(input, name) {
-    var normalizedInput = normalize(input);
-    if (!normalizedInput) return false;
-    return acceptableAnswers(name).some(function (ans) {
-      return normalize(ans) === normalizedInput;
-    });
-  }
-
-  // ---------------------------------------------------------------------
   // シルエットSVG描画
   // ---------------------------------------------------------------------
   var SVG_NS = 'http://www.w3.org/2000/svg';
@@ -516,7 +532,7 @@
     index: 0,
     correctCount: 0,
     wrongItems: [],   // [{code, name}]
-    answered: false
+    revealed: false
   };
 
   function shuffle(arr) {
@@ -544,35 +560,34 @@
   }
 
   function showQuestion() {
-    state.answered = false;
+    state.revealed = false;
     var code = state.queue[state.index];
     renderSilhouette(code);
     document.getElementById('quiz-progress').textContent = (state.index + 1) + ' / ' + state.queue.length;
 
-    var input = document.getElementById('answer-input');
-    input.value = '';
-    input.disabled = false;
-    document.getElementById('btn-submit').disabled = false;
     document.getElementById('feedback-box').classList.add('hidden');
-    document.getElementById('feedback-your-answer').classList.add('hidden');
-    document.getElementById('btn-next').classList.add('hidden');
-    document.getElementById('answer-form').classList.remove('hidden');
-    input.focus();
+    document.getElementById('self-check-buttons').classList.add('hidden');
+    document.getElementById('btn-reveal').classList.remove('hidden');
   }
 
-  function submitAnswer() {
-    if (state.answered) return;
+  function revealAnswer() {
+    if (state.revealed) return;
+    state.revealed = true;
     var code = state.queue[state.index];
     var pref = PREF_BY_CODE[code];
-    var input = document.getElementById('answer-input');
-    var rawAnswer = input.value;
-    var correct = isCorrectAnswer(rawAnswer, pref.name);
 
-    state.answered = true;
-    input.disabled = true;
-    document.getElementById('btn-submit').disabled = true;
+    document.getElementById('btn-reveal').classList.add('hidden');
+    document.getElementById('feedback-answer').textContent = pref.name;
+    document.getElementById('feedback-box').classList.remove('hidden');
+    document.getElementById('self-check-buttons').classList.remove('hidden');
+  }
 
-    if (correct) {
+  function answerSelfCheck(knew) {
+    if (!state.revealed) return;
+    var code = state.queue[state.index];
+    var pref = PREF_BY_CODE[code];
+
+    if (knew) {
       if (!progress[code]) {
         progress[code] = true;
         saveProgress(progress);
@@ -582,24 +597,6 @@
       state.wrongItems.push({ code: code, name: pref.name });
     }
 
-    var box = document.getElementById('feedback-box');
-    box.classList.remove('hidden', 'correct', 'wrong');
-    box.classList.add(correct ? 'correct' : 'wrong');
-    document.getElementById('feedback-word').textContent = correct ? '正解！' : '不正解…';
-    document.getElementById('feedback-answer').textContent = pref.name;
-
-    var yourAnswerEl = document.getElementById('feedback-your-answer');
-    if (!correct && rawAnswer.trim()) {
-      yourAnswerEl.textContent = 'あなたの回答: ' + rawAnswer.trim();
-      yourAnswerEl.classList.remove('hidden');
-    } else {
-      yourAnswerEl.classList.add('hidden');
-    }
-
-    document.getElementById('btn-next').classList.remove('hidden');
-  }
-
-  function nextQuestion() {
     state.index++;
     if (state.index >= state.queue.length) {
       showResult();
@@ -636,67 +633,118 @@
   // ---------------------------------------------------------------------
   // 覚えるモード（全体地図タップ）
   // ---------------------------------------------------------------------
-  var learnTapped = {};   // { code: true } セッション内のみ保持（永続化しない）
   var learnBuilt = false;
+  var learnSelectedCode = null;
+
+  var baseVB = FULL_MAP_VIEWBOX.split(' ').map(Number);
+  var learnView = { x: baseVB[0], y: baseVB[1], w: baseVB[2], h: baseVB[3] };
+  var MIN_VIEW_SIZE = baseVB[2] / 8; // 最大ズーム倍率の目安（8倍まで）
+
+  function applyLearnViewBox() {
+    var svg = document.getElementById('learn-svg');
+    svg.setAttribute('viewBox', learnView.x + ' ' + learnView.y + ' ' + learnView.w + ' ' + learnView.h);
+  }
+
+  function clampLearnView() {
+    learnView.w = Math.min(learnView.w, baseVB[2]);
+    learnView.h = Math.min(learnView.h, baseVB[3]);
+    learnView.w = Math.max(learnView.w, MIN_VIEW_SIZE);
+    learnView.h = Math.max(learnView.h, MIN_VIEW_SIZE);
+    var maxX = baseVB[0] + baseVB[2] - learnView.w;
+    var maxY = baseVB[1] + baseVB[3] - learnView.h;
+    learnView.x = Math.min(Math.max(learnView.x, baseVB[0]), Math.max(maxX, baseVB[0]));
+    learnView.y = Math.min(Math.max(learnView.y, baseVB[1]), Math.max(maxY, baseVB[1]));
+  }
+
+  function zoomLearnMap(factor) {
+    var cx = learnView.x + learnView.w / 2;
+    var cy = learnView.y + learnView.h / 2;
+    learnView.w /= factor;
+    learnView.h /= factor;
+    learnView.x = cx - learnView.w / 2;
+    learnView.y = cy - learnView.h / 2;
+    clampLearnView();
+    applyLearnViewBox();
+  }
+
+  function resetLearnView() {
+    learnView = { x: baseVB[0], y: baseVB[1], w: baseVB[2], h: baseVB[3] };
+    applyLearnViewBox();
+  }
 
   function buildLearnMap() {
     var svg = document.getElementById('learn-svg');
-    svg.setAttribute('viewBox', FULL_MAP_VIEWBOX);
+    applyLearnViewBox();
     svg.innerHTML = '';
 
     PREFECTURES.forEach(function (p) {
       var data = PREF_SVG[p.code];
-      var vbParts = data.vb.split(' ').map(Number);
-      var cx = vbParts[0] + vbParts[2] / 2;
-      var cy = vbParts[1] + vbParts[3] / 2;
-
       var g = document.createElementNS(SVG_NS, 'g');
       g.setAttribute('class', 'map-pref');
       g.setAttribute('data-code', p.code);
       g.innerHTML = '<path d="' + data.m + '"></path>';
       svg.appendChild(g);
-
-      var text = document.createElementNS(SVG_NS, 'text');
-      text.setAttribute('class', 'map-label');
-      text.setAttribute('data-code', p.code);
-      text.setAttribute('x', cx);
-      text.setAttribute('y', cy);
-      text.textContent = p.name;
-      svg.appendChild(text);
     });
 
+    // ドラッグでパン。動かした距離が閾値を超えたらタップ判定を抑止する。
+    var dragging = false, dragMoved = false;
+    var startClientX = 0, startClientY = 0, startViewX = 0, startViewY = 0;
+
+    svg.addEventListener('pointerdown', function (e) {
+      dragging = true;
+      dragMoved = false;
+      startClientX = e.clientX;
+      startClientY = e.clientY;
+      startViewX = learnView.x;
+      startViewY = learnView.y;
+      svg.setPointerCapture(e.pointerId);
+    });
+    svg.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dxPx = e.clientX - startClientX;
+      var dyPx = e.clientY - startClientY;
+      if (Math.abs(dxPx) > 4 || Math.abs(dyPx) > 4) dragMoved = true;
+      if (!dragMoved) return;
+      var rect = svg.getBoundingClientRect();
+      var scaleX = learnView.w / rect.width;
+      var scaleY = learnView.h / rect.height;
+      learnView.x = startViewX - dxPx * scaleX;
+      learnView.y = startViewY - dyPx * scaleY;
+      clampLearnView();
+      applyLearnViewBox();
+    });
+    function endDrag(e) {
+      dragging = false;
+      try { svg.releasePointerCapture(e.pointerId); } catch (err) { /* noop */ }
+    }
+    svg.addEventListener('pointerup', endDrag);
+    svg.addEventListener('pointercancel', endDrag);
+
     svg.addEventListener('click', function (e) {
+      if (dragMoved) { dragMoved = false; return; }
       var group = e.target.closest('.map-pref');
       if (!group) return;
-      var code = group.getAttribute('data-code');
-      onLearnTap(code);
+      onLearnTap(group.getAttribute('data-code'));
     });
 
     learnBuilt = true;
   }
 
-  function onLearnTap(code) {
-    learnTapped[code] = true;
-
+  function refreshLearnColors() {
     var svg = document.getElementById('learn-svg');
     svg.querySelectorAll('.map-pref').forEach(function (g) {
-      g.classList.toggle('tapped', !!learnTapped[g.getAttribute('data-code')]);
+      g.classList.toggle('learned', !!progress[g.getAttribute('data-code')]);
     });
-    svg.querySelectorAll('.map-label').forEach(function (t) {
-      t.classList.toggle('visible', t.getAttribute('data-code') === code);
-    });
-
-    document.getElementById('learn-count').textContent = Object.keys(learnTapped).length;
-    document.getElementById('learn-selected').textContent = PREF_BY_CODE[code].name;
+    document.getElementById('learn-count').textContent = clearedCount();
   }
 
-  function resetLearnMap() {
-    learnTapped = {};
+  function onLearnTap(code) {
+    learnSelectedCode = code;
     var svg = document.getElementById('learn-svg');
-    svg.querySelectorAll('.map-pref').forEach(function (g) { g.classList.remove('tapped'); });
-    svg.querySelectorAll('.map-label').forEach(function (t) { t.classList.remove('visible'); });
-    document.getElementById('learn-count').textContent = '0';
-    document.getElementById('learn-selected').textContent = '都道府県をタップしてね';
+    svg.querySelectorAll('.map-pref').forEach(function (g) {
+      g.classList.toggle('active', g.getAttribute('data-code') === code);
+    });
+    document.getElementById('learn-selected').textContent = PREF_BY_CODE[code].name;
   }
 
   // ---------------------------------------------------------------------
@@ -736,11 +784,13 @@
     saveProgress(progress);
     refreshTopScreen();
   });
-  document.getElementById('answer-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    submitAnswer();
+  document.getElementById('btn-reveal').addEventListener('click', revealAnswer);
+  document.getElementById('btn-knew').addEventListener('click', function () { answerSelfCheck(true); });
+  document.getElementById('btn-didnt-know').addEventListener('click', function () { answerSelfCheck(false); });
+  document.getElementById('btn-quiz-back').addEventListener('click', function () {
+    refreshTopScreen();
+    showScreen('top');
   });
-  document.getElementById('btn-next').addEventListener('click', nextQuestion);
   document.getElementById('btn-retry').addEventListener('click', function () {
     startGame(state.mode);
   });
@@ -750,13 +800,17 @@
   });
   document.getElementById('btn-start-learn').addEventListener('click', function () {
     if (!learnBuilt) buildLearnMap();
+    refreshLearnColors();
     showScreen('learn');
   });
   document.getElementById('btn-learn-back').addEventListener('click', function () {
     refreshTopScreen();
     showScreen('top');
   });
-  document.getElementById('btn-learn-reset').addEventListener('click', resetLearnMap);
+  var ZOOM_STEP = 1.5;
+  document.getElementById('btn-zoom-in').addEventListener('click', function () { zoomLearnMap(ZOOM_STEP); });
+  document.getElementById('btn-zoom-out').addEventListener('click', function () { zoomLearnMap(1 / ZOOM_STEP); });
+  document.getElementById('btn-zoom-reset').addEventListener('click', resetLearnView);
 
   // ---------------------------------------------------------------------
   // 初期化
