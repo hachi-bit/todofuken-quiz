@@ -658,9 +658,11 @@
     applyLearnViewBox();
   }
 
+  var INITIAL_ZOOM = 4;
+
   function buildLearnMap() {
     var svg = document.getElementById('learn-svg');
-    applyLearnViewBox();
+    zoomLearnMap(INITIAL_ZOOM); // 最初から拡大した状態で表示する
     svg.innerHTML = '';
 
     PREFECTURES.forEach(function (p) {
