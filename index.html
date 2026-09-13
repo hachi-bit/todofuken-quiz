@@ -231,6 +231,85 @@
     line-height: 1.6;
   }
   footer a { color: var(--sub); }
+
+  .learn-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .learn-header .learn-count {
+    font-size: 0.9rem;
+    color: var(--sub);
+  }
+  .learn-header .learn-count strong { color: var(--accent); }
+  .btn-back {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  .learn-map-wrap {
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 14px;
+  }
+  .learn-map-wrap svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 62vh;
+  }
+  .map-pref {
+    fill: #d9e4dd;
+    stroke: #888;
+    stroke-width: 0.8;
+    cursor: pointer;
+    transition: fill 0.15s ease;
+  }
+  .map-pref:hover {
+    fill: #bcd3c5;
+  }
+  .map-pref.tapped {
+    fill: var(--accent);
+  }
+  .map-label {
+    font-size: 15px;
+    font-weight: bold;
+    fill: #1a1a1a;
+    paint-order: stroke;
+    stroke: #ffffff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .map-label.visible {
+    opacity: 1;
+  }
+  .learn-hint {
+    text-align: center;
+    color: var(--sub);
+    font-size: 0.8rem;
+    margin: 4px 0 10px;
+  }
+  .learn-selected {
+    text-align: center;
+    background: #eef3ee;
+    color: var(--accent-dark);
+    font-size: 1.3rem;
+    font-weight: bold;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 14px;
+  }
 </style>
 </head>
 <body>
@@ -248,6 +327,7 @@
     <button class="btn" id="btn-start-normal" type="button">通常モード</button>
     <button class="btn secondary" id="btn-start-weak" type="button">苦手だけモード</button>
     <p class="weak-note" id="weak-note" hidden>すべての都道府県をクリア済みです。苦手だけモードは選べません。</p>
+    <button class="btn secondary" id="btn-start-learn" type="button">覚えるモード</button>
     <button class="btn danger" id="btn-reset" type="button">進捗をリセット</button>
 
     <footer>
@@ -297,6 +377,22 @@
     <button class="btn secondary" id="btn-to-top" type="button">トップに戻る</button>
   </section>
 
+  <!-- ===== 覚える画面 ===== -->
+  <section id="screen-learn" class="card hidden">
+    <div class="learn-header">
+      <button class="btn-back" id="btn-learn-back" type="button">← トップに戻る</button>
+      <span class="learn-count">タップ済み: <strong id="learn-count">0</strong> / 47</span>
+    </div>
+    <p class="learn-hint">地図をタップすると、その都道府県名が表示されます</p>
+    <div class="learn-selected" id="learn-selected">都道府県をタップしてね</div>
+
+    <div class="learn-map-wrap">
+      <svg id="learn-svg" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <button class="btn secondary" id="btn-learn-reset" type="button">タップ状態をリセット</button>
+  </section>
+
 </div>
 
 <script id="pref-svg-data" type="application/json">
@@ -339,6 +435,7 @@
   PREFECTURES.forEach(function (p) { PREF_BY_CODE[p.code] = p; });
 
   var PREF_SVG = JSON.parse(document.getElementById('pref-svg-data').textContent);
+  var FULL_MAP_VIEWBOX = '24.56 -9.44 1003.88 1010.88';
 
   var STORAGE_KEY = 'todofuken-quiz-progress';
 
@@ -537,10 +634,77 @@
   }
 
   // ---------------------------------------------------------------------
+  // 覚えるモード（全体地図タップ）
+  // ---------------------------------------------------------------------
+  var learnTapped = {};   // { code: true } セッション内のみ保持（永続化しない）
+  var learnBuilt = false;
+
+  function buildLearnMap() {
+    var svg = document.getElementById('learn-svg');
+    svg.setAttribute('viewBox', FULL_MAP_VIEWBOX);
+    svg.innerHTML = '';
+
+    PREFECTURES.forEach(function (p) {
+      var data = PREF_SVG[p.code];
+      var vbParts = data.vb.split(' ').map(Number);
+      var cx = vbParts[0] + vbParts[2] / 2;
+      var cy = vbParts[1] + vbParts[3] / 2;
+
+      var g = document.createElementNS(SVG_NS, 'g');
+      g.setAttribute('class', 'map-pref');
+      g.setAttribute('data-code', p.code);
+      g.setAttribute('transform', data.t);
+      g.innerHTML = data.m;
+      svg.appendChild(g);
+
+      var text = document.createElementNS(SVG_NS, 'text');
+      text.setAttribute('class', 'map-label');
+      text.setAttribute('data-code', p.code);
+      text.setAttribute('x', cx);
+      text.setAttribute('y', cy);
+      text.textContent = p.name;
+      svg.appendChild(text);
+    });
+
+    svg.addEventListener('click', function (e) {
+      var group = e.target.closest('.map-pref');
+      if (!group) return;
+      var code = group.getAttribute('data-code');
+      onLearnTap(code);
+    });
+
+    learnBuilt = true;
+  }
+
+  function onLearnTap(code) {
+    learnTapped[code] = true;
+
+    var svg = document.getElementById('learn-svg');
+    svg.querySelectorAll('.map-pref').forEach(function (g) {
+      g.classList.toggle('tapped', !!learnTapped[g.getAttribute('data-code')]);
+    });
+    svg.querySelectorAll('.map-label').forEach(function (t) {
+      t.classList.toggle('visible', t.getAttribute('data-code') === code);
+    });
+
+    document.getElementById('learn-count').textContent = Object.keys(learnTapped).length;
+    document.getElementById('learn-selected').textContent = PREF_BY_CODE[code].name;
+  }
+
+  function resetLearnMap() {
+    learnTapped = {};
+    var svg = document.getElementById('learn-svg');
+    svg.querySelectorAll('.map-pref').forEach(function (g) { g.classList.remove('tapped'); });
+    svg.querySelectorAll('.map-label').forEach(function (t) { t.classList.remove('visible'); });
+    document.getElementById('learn-count').textContent = '0';
+    document.getElementById('learn-selected').textContent = '都道府県をタップしてね';
+  }
+
+  // ---------------------------------------------------------------------
   // 画面切り替え
   // ---------------------------------------------------------------------
   function showScreen(name) {
-    ['top', 'quiz', 'result'].forEach(function (n) {
+    ['top', 'quiz', 'result', 'learn'].forEach(function (n) {
       document.getElementById('screen-' + n).classList.toggle('hidden', n !== name);
     });
   }
@@ -585,6 +749,15 @@
     refreshTopScreen();
     showScreen('top');
   });
+  document.getElementById('btn-start-learn').addEventListener('click', function () {
+    if (!learnBuilt) buildLearnMap();
+    showScreen('learn');
+  });
+  document.getElementById('btn-learn-back').addEventListener('click', function () {
+    refreshTopScreen();
+    showScreen('top');
+  });
+  document.getElementById('btn-learn-reset').addEventListener('click', resetLearnMap);
 
   // ---------------------------------------------------------------------
   // 初期化
