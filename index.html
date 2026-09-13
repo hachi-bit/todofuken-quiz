@@ -279,7 +279,9 @@
     fill: var(--accent);
   }
   .map-pref.active {
-    stroke: #d98a2b;
+    /* タップ中は「覚えた/未」とは独立した色で塗って、はっきり区別する */
+    fill: #e08a2e;
+    stroke: #a3560f;
     stroke-width: 3.5;
   }
   .learn-hint {
@@ -320,6 +322,7 @@
   }
   .legend-swatch.learned { background: var(--accent); border-color: var(--accent); }
   .legend-swatch.unlearned { background: #d9e4dd; }
+  .legend-swatch.active { background: #e08a2e; border-color: #a3560f; }
 
   .zoom-controls {
     position: absolute;
@@ -421,8 +424,9 @@
     <p class="learn-hint">地図をタップすると、都道府県名が上に表示されます</p>
     <div class="learn-selected" id="learn-selected">都道府県をタップしてね</div>
     <div class="learn-legend">
-      <span><span class="legend-swatch learned"></span>覚えた（クイズ正解済み）</span>
       <span><span class="legend-swatch unlearned"></span>まだ</span>
+      <span><span class="legend-swatch learned"></span>覚えた</span>
+      <span><span class="legend-swatch active"></span>選択中</span>
     </div>
 
     <div class="learn-map-wrap" id="learn-map-wrap">
@@ -697,13 +701,19 @@
       startClientY = e.clientY;
       startViewX = learnView.x;
       startViewY = learnView.y;
-      svg.setPointerCapture(e.pointerId);
+      // ここではまだキャプチャしない。タップだけの操作でキャプチャすると
+      // click イベントの target がSVGそのものにずれてしまい、
+      // 「どの都道府県をタップしたか」が判定できなくなるため、実際に
+      // 閾値を超えてドラッグが始まったと分かった時点で初めて捕捉する。
     });
     svg.addEventListener('pointermove', function (e) {
       if (!dragging) return;
       var dxPx = e.clientX - startClientX;
       var dyPx = e.clientY - startClientY;
-      if (Math.abs(dxPx) > 4 || Math.abs(dyPx) > 4) dragMoved = true;
+      if (!dragMoved && (Math.abs(dxPx) > 4 || Math.abs(dyPx) > 4)) {
+        dragMoved = true;
+        svg.setPointerCapture(e.pointerId);
+      }
       if (!dragMoved) return;
       var rect = svg.getBoundingClientRect();
       var scaleX = learnView.w / rect.width;
