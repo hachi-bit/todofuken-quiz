@@ -107,15 +107,12 @@
   }
 
   .quiz-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: center;
     margin-bottom: 10px;
   }
   .quiz-header .quiz-status {
     font-size: 0.9rem;
     color: var(--sub);
-    text-align: right;
   }
   .quiz-header .mode-label {
     display: block;
@@ -223,9 +220,7 @@
   footer a { color: var(--sub); }
 
   .learn-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: center;
     margin-bottom: 10px;
   }
   .learn-header .learn-count {
@@ -233,21 +228,6 @@
     color: var(--sub);
   }
   .learn-header .learn-count strong { color: var(--accent); }
-  .btn-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #ffffff;
-    border: 2px solid var(--accent);
-    color: var(--accent);
-    font-size: 0.85rem;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 8px;
-  }
-  .btn-back:hover { background: #eef6f0; }
-  .btn-back:active { transform: scale(0.98); }
 
   .learn-map-wrap {
     position: relative;
@@ -375,7 +355,6 @@
   <!-- ===== 出題画面 ===== -->
   <section id="screen-quiz" class="card hidden">
     <div class="quiz-header">
-      <button class="btn-back" id="btn-quiz-back" type="button">← トップに戻る</button>
       <span class="quiz-status">
         <span class="mode-label" id="quiz-mode-label">通常モード</span>
         <span id="quiz-progress">1 / 47</span>
@@ -396,6 +375,8 @@
       <button class="btn btn-knew" id="btn-knew" type="button">覚えていた</button>
       <button class="btn btn-didnt-know" id="btn-didnt-know" type="button">まだ覚えていない</button>
     </div>
+
+    <button class="btn secondary" id="btn-quiz-back" type="button">← トップに戻る</button>
   </section>
 
   <!-- ===== 結果画面 ===== -->
@@ -418,7 +399,6 @@
   <!-- ===== 覚える画面 ===== -->
   <section id="screen-learn" class="card hidden">
     <div class="learn-header">
-      <button class="btn-back" id="btn-learn-back" type="button">← トップに戻る</button>
       <span class="learn-count">覚えた: <strong id="learn-count">0</strong> / 47</span>
     </div>
     <p class="learn-hint">地図をタップすると、都道府県名が上に表示されます</p>
@@ -437,6 +417,8 @@
         <button class="zoom-btn zoom-reset" id="btn-zoom-reset" type="button" aria-label="全体表示に戻す">⤾</button>
       </div>
     </div>
+
+    <button class="btn secondary" id="btn-learn-back" type="button">← トップに戻る</button>
   </section>
 
 </div>
